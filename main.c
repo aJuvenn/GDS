@@ -9,22 +9,18 @@
 
 
 
-GDS_ARRAY_DEFINE(int, int)
-GDS_STACK_DEFINE(char, char)
-
-
-
 
 int leq(int * a, int * b)
 {
 	return *a <= *b;
 }
 
+
 void testArrays()
 {
 	GdsArray(int) * t;
 
-	GDS_ARRAY_NEW(t, 100000);
+	GDS_ARRAY_NEW(t, 10);
 
 
 	GDS_ARRAY_FOR(t, i, it,
@@ -49,8 +45,6 @@ void testArrays()
 	gdsArrayDeallocate(&tCopy);
 	gdsArrayFree(t);
 }
-
-
 
 
 void testStack()
@@ -78,11 +72,55 @@ void testStack()
 }
 
 
+
+void testList()
+{
+	static char * s = "coucou ca va ?";
+
+	GdsLinkedList(char *) * l = gdsLinkedListNew();
+
+	for (size_t i = 0 ; i < 10 ; i++){
+		gdsLinkedListAppend(l, s + i);
+	}
+
+	GDS_LINKED_LIST_FOR(l, i, it,
+			printf("[%lu] %s\n", i, *it);
+	);
+}
+
+
+
+void testQueue()
+{
+	GdsQueue(float) * q;
+	GDS_QUEUE_NEW(q, 2);
+
+	for (float x = 0. ; x < 1 ; x += 0.1){
+		gdsQueueInsert(q, x);
+	}
+
+	GDS_QUEUE_FOR(q, i, it,
+			printf("[%lu] %f\n", i, *it);
+	);
+
+	for (int i = 0 ; i < 5 ; i++){
+		float x = gdsQueueRemove(q);
+		printf("\nRemoved element : %f\nNew queue : ", x);
+		GDS_QUEUE_FOR(q, i, it,
+				printf("[%lu] %f\n", i, *it);
+		);
+	}
+
+
+}
+
+
+
 int main(int argc, char **argv) {
 
 	srand(time(NULL));
 
-	testStack();
+	testQueue();
 
 	return 0;
 }

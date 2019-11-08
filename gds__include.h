@@ -18,5 +18,7 @@
 #include "Utils/gds__utils.h"
 #include "Array/gds__array.h"
 #include "Stack/gds__stack.h"
+#include "Queue/gds__queue.h"
+#include "Linked_List/gds__linked_list.h"
 
 #endif /* GDS__INCLUDE_H_ */

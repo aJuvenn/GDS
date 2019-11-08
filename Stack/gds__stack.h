@@ -11,11 +11,8 @@
 #include "../gds__include.h"
 
 
-typedef GdsArrayTemplate GdsStackTemplate;
+#define GdsStack(type) GdsArray(type)
 
-#define GDS_STACK_DEFINE(typeName, type) GDS_ARRAY_DEFINE(stack__##typeName, type)
-
-#define GdsStack(typeName) GdsArray(stack__##typeName)
 
 #define GDS_STACK_ELTYPEOF(s) typeof(*((s)->elements))
 #define GDS_STACK_ELSIZEOF(s) sizeof(*((s)->elements))
@@ -36,7 +33,7 @@ void gdsStackTemplateAllocate(void * s, size_t elementSize);
 
 void * gdsStackTemplateNew(size_t elementSize);
 
-#define GDS_STACK_NEW(s, nbElements)\
+#define GDS_STACK_NEW(s)\
 	do {\
 		(s) = (void *) gdsStackTemplateNew(GDS_STACK_ELSIZEOF(s));\
 	} while (0)

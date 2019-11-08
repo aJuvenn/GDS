@@ -39,4 +39,11 @@
 	} while (0)
 
 
+
+#define GDS_ELTYPEOF(xPtr) typeof(*((xPtr)->elements))
+
+#define GDS_ELSIZEOF(xPtr) sizeof(*((xPtr)->elements))
+
+
+
 #endif /* GDS_UTILS_H_ */
