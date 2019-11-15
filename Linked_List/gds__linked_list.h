@@ -13,105 +13,119 @@
 
 
 
-#define GdsLinkedList(type) struct {type * firstElement; type * lastElement; size_t nbElements;}
-#define GdsLink(type) struct {type * nextElement; type * previousElement; type element;}
+#define GdsList(type) GdsList__##type
 
+#define GDS_LIST_DEFINE(type)\
+	typedef _GdsListTemplate(type) GdsList(type)
 
-typedef GdsLink(char) GdsLinkTemplate;
-typedef GdsLinkedList(char) GdsLinkedListTemplate;
-
-
-#define GDS_LINK_PTR(elPtr) ((GdsLink(typeof(*(elPtr))) *) (((void **) (elPtr)) - 2))
+#define _GdsListTemplate(type) struct {type * firstElement; type * lastElement; size_t nbElements;}
 
 
 
-
-#define GDS_LINKED_LIST_NEXT(elPtr) (GDS_LINK_PTR(elPtr)->nextElement)
-#define GDS_LINKED_LIST_PREVIOUS(elPtr) (GDS_LINK_PTR(elPtr)->previousElement)
-
-
-#define GDS_LINKED_LIST_ELTYPE(lPtr) typeof(*((lPtr)->firstElement))
-#define GDS_LINKED_LIST_ELSIZE(lPtr) sizeof(*((lPtr)->firstElement))
+#define _GdsLink(type) struct {type * nextElement; type * previousElement; type element;}
 
 
 
-#define GDS_LINKED_LIST_FOR(lPtr, indexName, iteratorName, instruction)\
+
+typedef _GdsLink(char) _GdsLinkCharTemplate;
+typedef _GdsListTemplate(char) _GdsListCharTemplate;
+
+
+#define GDS_LINK_PTR(elPtr) ((_GdsLink(typeof(*(elPtr))) *) (((void **) (elPtr)) - 2))
+
+
+
+
+#define GDS_LIST_NEXT(elPtr) (GDS_LINK_PTR(elPtr)->nextElement)
+#define GDS_LIST_PREVIOUS(elPtr) (GDS_LINK_PTR(elPtr)->previousElement)
+
+
+#define GDS_LIST_ELTYPEOF(lPtr) typeof(*((lPtr)->firstElement))
+#define GDS_LIST_ELSIZEOF(lPtr) sizeof(*((lPtr)->firstElement))
+
+
+
+#define GDS_LIST_FOR(lPtr, indexName, iteratorName, instruction)\
 	do {\
 		size_t indexName = 0;\
-		for (GDS_LINKED_LIST_ELTYPE(lPtr) * iteratorName = (lPtr)->firstElement ; \
+		for (GDS_LIST_ELTYPEOF(lPtr) * iteratorName = (lPtr)->firstElement ; \
 			 iteratorName != NULL ; \
-			 iteratorName = GDS_LINKED_LIST_NEXT(iteratorName)\
+			 ({iteratorName = GDS_LIST_NEXT(iteratorName); indexName++;})\
 			){\
 			{instruction}\
-			indexName++;\
 		}\
 	} while(0)
 
 
-#define GDS_LINKED_LIST_REVERSE_FOR(lPtr, indexName, iteratorName, instruction)\
+#define GDS_LIST_REVERSE_FOR(lPtr, indexName, iteratorName, instruction)\
 	do {\
 		size_t indexName = 0;\
-		for (GDS_LINKED_LIST_ELTYPE(lPtr) * iteratorName = (lPtr)->lastElement ; \
+		for (GDS_LIST_ELTYPEOF(lPtr) * iteratorName = (lPtr)->lastElement ; \
 			 iteratorName != NULL ; \
-			 iteratorName = GDS_LINKED_LIST_PREVIOUS(iteratorName)\
+			 ({iteratorName = GDS_LIST_PREVIOUS(iteratorName) ; indexName++;})\
 			){\
 			{instruction}\
-			indexName++;\
 		}\
 	} while(0)
 
 
-void gdsLinkedListAllocate(void * lPtr);
-void * gdsLinkedListNew();
+void gdsListAllocate(void * lPtr);
+void * gdsListNew();
 
 
-void gdsLinkedListTemplateAppend(void * lPtr, void * elementPtr, size_t elementSize);
+void _gdsListTemplateAppend(void * lPtr, void * elementPtr, size_t elementSize);
 
-#define gdsLinkedListAppend(lPtr, element)\
+#define gdsListAppend(lPtr, element)\
 		do {\
-			GDS_LINKED_LIST_ELTYPE(lPtr) _GDS_ELEMENT_TO_APPEND = (element);\
-			gdsLinkedListTemplateAppend((lPtr), & _GDS_ELEMENT_TO_APPEND, GDS_LINKED_LIST_ELSIZE(lPtr));\
+			GDS_LIST_ELTYPEOF(lPtr) _GDS_ELEMENT_TO_APPEND = (element);\
+			_gdsListTemplateAppend((lPtr), & _GDS_ELEMENT_TO_APPEND, GDS_LIST_ELSIZEOF(lPtr));\
 		} while (0)
 
 
-void gdsLinkedListTemplateAppendBefore(void * lPtr, void * elementPtr, size_t elementSize);
+void _gdsListTemplateAppendBefore(void * lPtr, void * elementPtr, size_t elementSize);
 
 
-#define gdsLinkedListAppendBefore(lPtr, element)\
+#define gdsListAppendBefore(lPtr, element)\
 		do {\
-			GDS_LINKED_LIST_ELTYPE(lPtr) _GDS_ELEMENT_TO_APPEND = (element);\
-			gdsLinkedListTemplateAppendBefore((lPtr), & _GDS_ELEMENT_TO_APPEND, GDS_LINKED_LIST_ELSIZE(lPtr));\
+			GDS_LIST_ELTYPEOF(lPtr) _GDS_ELEMENT_TO_APPEND = (element);\
+			_gdsListTemplateAppendBefore((lPtr), & _GDS_ELEMENT_TO_APPEND, GDS_LIST_ELSIZEOF(lPtr));\
 		} while (0)
 
 
 
 
 
-void gdsLinkedListTemplateInsertAfter(void * lPtr, void * elementToInsertPtr, void * elementInListPtr, size_t elementSize);
+void _gdsListTemplateInsertAfter(void * lPtr, void * elementToInsertPtr, void * elementInListPtr, size_t elementSize);
 
 
-#define gdsLinkedListInsertAfter(lPtr, elementToInsert, elementInListPtr)\
+#define gdsListInsertAfter(lPtr, elementToInsert, elementInListPtr)\
 	do {\
-		GDS_LINKED_LIST_ELTYPE(lPtr) _GDS_ELEMENT_TO_INSERT = (elementToInsert);\
-		gdsLinkedListTemplateInsertAfter(lPtr, & _GDS_ELEMENT_TO_INSERT, elementInListPtr, GDS_LINKED_LIST_ELSIZE(lPtr));\
+		GDS_LIST_ELTYPEOF(lPtr) _GDS_ELEMENT_TO_INSERT = (elementToInsert);\
+		_gdsListTemplateInsertAfter(lPtr, & _GDS_ELEMENT_TO_INSERT, elementInListPtr, GDS_LIST_ELSIZEOF(lPtr));\
 	} while (0)
 
 
 
 
 
-void gdsLinkedListTemplateInsertBefore(void * lPtr, void * elementToInsertPtr, void * elementInListPtr, size_t elementSize);
+void _gdsListTemplateInsertBefore(void * lPtr, void * elementToInsertPtr, void * elementInListPtr, size_t elementSize);
 
 
-#define gdsLinkedListInsertBefore(lPtr, elementToInsert, elementInListPtr)\
+#define gdsListInsertBefore(lPtr, elementToInsert, elementInListPtr)\
 	do {\
-		GDS_LINKED_LIST_ELTYPE(lPtr) _GDS_ELEMENT_TO_INSERT = (elementToInsert);\
-		gdsLinkedListTemplateInsertBefore(lPtr, & _GDS_ELEMENT_TO_INSERT, elementInListPtr, GDS_LINKED_LIST_ELSIZE(lPtr));\
+		GDS_LIST_ELTYPEOF(lPtr) _GDS_ELEMENT_TO_INSERT = (elementToInsert);\
+		_gdsListTemplateInsertBefore(lPtr, & _GDS_ELEMENT_TO_INSERT, elementInListPtr, GDS_LIST_ELSIZEOF(lPtr));\
 	} while (0)
 
 
 
 
+void _gdsListTemplateRemove(void * lPtr, void * elementPtr, void * destToCopy, size_t elementSize);
+
+#define gdsListRemove(lPtr, elementPtr)\
+		({GDS_LIST_ELTYPEOF(lPtr) _GDS_LIST_ELEMENT_TO_RETURN;\
+		_gdsListTemplateRemove((lPtr), (elementPtr), & _GDS_LIST_ELEMENT_TO_RETURN, GDS_LIST_ELSIZEOF(lPtr));\
+		_GDS_LIST_ELEMENT_TO_RETURN;})
 
 
 #endif /* LINKED_LIST_GDS__LINKED_LIST_H_ */

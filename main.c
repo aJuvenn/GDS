@@ -9,43 +9,13 @@
 
 
 
-
 int leq(int * a, int * b)
 {
 	return *a <= *b;
 }
 
 
-void testArrays()
-{
-	GdsArray(int) * t;
-
-	GDS_ARRAY_NEW(t, 10);
-
-
-	GDS_ARRAY_FOR(t, i, it,
-			*it = rand() % 100;
-	);
-
-	GDS_ARRAY_FOR(t, i, it,
-			printf("[%lu] %d\n", i, *it);
-	);
-
-	gdsArraySort(t, leq);
-
-	GdsArray(int) tCopy;
-	gdsArrayAllocate(&tCopy, 0);
-	gdsArrayCopy(&tCopy, t);
-
-
-	GDS_ARRAY_FOR(&tCopy, i, it,
-			printf("[%lu] %d\n", i, *it);
-	);
-
-	gdsArrayDeallocate(&tCopy);
-	gdsArrayFree(t);
-}
-
+/*
 
 void testStack()
 {
@@ -71,24 +41,35 @@ void testStack()
 	gdsStackDeallocate(&s);
 }
 
+*/
 
+
+typedef char * String;
+GDS_LIST_DEFINE(String);
 
 void testList()
 {
 	static char * s = "coucou ca va ?";
 
-	GdsLinkedList(char *) * l = gdsLinkedListNew();
+	GdsList(String) * l = gdsListNew();
 
 	for (size_t i = 0 ; i < 10 ; i++){
-		gdsLinkedListAppend(l, s + i);
+		gdsListAppend(l, s + i);
 	}
 
-	GDS_LINKED_LIST_FOR(l, i, it,
+	GDS_LIST_FOR(l, i, it,
+			printf("[%lu] %s\n", i, *it);
+	);
+
+	printf("Removed element : %s\n", gdsListRemove(l, GDS_LIST_NEXT(GDS_LIST_NEXT(l->firstElement))));
+	printf("Removed element : %s\n", gdsListRemove(l, l->lastElement));
+
+	GDS_LIST_FOR(l, i, it,
 			printf("[%lu] %s\n", i, *it);
 	);
 }
 
-
+/*
 
 void testQueue()
 {
@@ -113,6 +94,46 @@ void testQueue()
 
 
 }
+*/
+
+
+GDS_ARRAY_DEFINE(int);
+
+
+
+void myPrintArray(const GdsArray(int) * const a)
+{
+	GDS_ARRAY_FOR(a, i, it,
+			printf("[%lu] %d\n", i, *it);
+	);
+}
+
+
+void testArrays()
+{
+	GdsArray(int) * t;
+
+	GDS_ARRAY_NEW(t, 10);
+
+
+	GDS_ARRAY_FOR(t, i, it,
+		*it = rand() % 100;
+	);
+
+
+	myPrintArray(t);
+
+	gdsArraySort(t, leq);
+
+	GdsArray(int) tCopy;
+	gdsArrayAllocate(&tCopy, 0);
+	gdsArrayCopy(&tCopy, t);
+
+	myPrintArray(&tCopy);
+
+	gdsArrayDeallocate(&tCopy);
+	gdsArrayFree(t);
+}
 
 
 
@@ -120,7 +141,8 @@ int main(int argc, char **argv) {
 
 	srand(time(NULL));
 
-	testQueue();
+	testArrays();
+	testList();
 
 	return 0;
 }

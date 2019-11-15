@@ -24,7 +24,7 @@ void * gdsStackTemplateNew(size_t elementSize)
 
 int gdsStackTemplatePop(void * s_ptr, void * elementToFill, size_t elementSize)
 {
-	GdsArray(char) * t = s_ptr;
+	GdsArrayTemplate(char) * t = s_ptr;
 
 
 	if (t->nbElements == 0){
