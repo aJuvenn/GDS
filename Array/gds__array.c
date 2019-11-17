@@ -180,11 +180,7 @@ void _gdsArrayTemplateCopy(void * const dst_ptr, const void * const src_ptr, con
 	_GdsArrayCharTemplate * const dst = dst_ptr;
 	const _GdsArrayCharTemplate * const src = src_ptr;
 
-	if (dst->nbElements < src->nbElements){
-		_gdsArrayTemplateExtend(dst, src->nbElements - dst->nbElements, elementSize);
-	} else if (dst->nbElements > src->nbElements){
-		_gdsArrayTemplateRetract(dst, dst->nbElements - src->nbElements, elementSize);
-	}
+	_gdsArrayTemplateAllocate(dst, src->nbElements, elementSize);
 
 	memcpy(dst->elements, src->elements, elementSize * src->nbElements);
 }

@@ -41,7 +41,7 @@ void testStack()
 	gdsStackDeallocate(&s);
 }
 
-*/
+ */
 
 
 typedef char * String;
@@ -67,6 +67,8 @@ void testList()
 	GDS_LIST_FOR(l, i, it,
 			printf("[%lu] %s\n", i, *it);
 	);
+
+	gdsListFree(l);
 }
 
 /*
@@ -94,7 +96,7 @@ void testQueue()
 
 
 }
-*/
+ */
 
 
 GDS_ARRAY_DEFINE(int);
@@ -112,12 +114,11 @@ void myPrintArray(const GdsArray(int) * const a)
 void testArrays()
 {
 	GdsArray(int) * t;
-
 	GDS_ARRAY_NEW(t, 10);
 
 
 	GDS_ARRAY_FOR(t, i, it,
-		*it = rand() % 100;
+			*it = rand() % 100;
 	);
 
 
@@ -126,7 +127,6 @@ void testArrays()
 	gdsArraySort(t, leq);
 
 	GdsArray(int) tCopy;
-	gdsArrayAllocate(&tCopy, 0);
 	gdsArrayCopy(&tCopy, t);
 
 	myPrintArray(&tCopy);
@@ -137,12 +137,33 @@ void testArrays()
 
 
 
+
+
+GDS_TABLE_DEFINE(char, double);
+
+void testTable()
+{
+	GdsTable(char, double) * t = gdsTableNew(3);
+
+	gdsTableSet(t, 'a', 0.4);
+	gdsTableSet(t, 'b', 0.1);
+	gdsTableSet(t, 'c', 1000.7);
+	gdsTableSet(t, 'd', 0.67367);
+	gdsTableSet(t, 'e', 1000000000.1);
+
+	for (char c = 'a' ; c <= 'e' ; c++){
+		printf("%c -> %f\n", c, *gdsTableGetPtr(t, c));
+	}
+
+	gdsTableFree(t);
+}
+
+
 int main(int argc, char **argv) {
 
 	srand(time(NULL));
 
-	testArrays();
-	testList();
+	testTable();
 
 	return 0;
 }

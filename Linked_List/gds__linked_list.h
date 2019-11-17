@@ -13,7 +13,7 @@
 
 
 
-#define GdsList(type) GdsList__##type
+#define GdsList(type) _GdsList__##type##_Template
 
 #define GDS_LIST_DEFINE(type)\
 	typedef _GdsListTemplate(type) GdsList(type)
@@ -70,7 +70,11 @@ typedef _GdsListTemplate(char) _GdsListCharTemplate;
 
 
 void gdsListAllocate(void * lPtr);
+void gdsListDeallocate(void * lPtr);
+
+
 void * gdsListNew();
+void gdsListFree(void * lPtr);
 
 
 void _gdsListTemplateAppend(void * lPtr, void * elementPtr, size_t elementSize);

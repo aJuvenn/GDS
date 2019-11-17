@@ -117,3 +117,28 @@ void _gdsListTemplateRemove(void * lPtr, void * elementPtr, void * destToCopy, s
 	free(GDS_LINK_PTR((char *) elementPtr));
 }
 
+
+void gdsListDeallocate(void * lPtr)
+{
+	_GdsListCharTemplate * l = lPtr;
+	char * nextElementToFree = l->firstElement;
+
+	while (nextElementToFree != NULL){
+		char * elementToFree = nextElementToFree;
+		nextElementToFree = GDS_LIST_NEXT(elementToFree);
+		free(GDS_LINK_PTR(elementToFree));
+	}
+
+	l->firstElement = NULL;
+	l->lastElement = NULL;
+	l->nbElements = 0;
+}
+
+
+void gdsListFree(void * lPtr)
+{
+	gdsListDeallocate(lPtr);
+	free(lPtr);
+}
+
+
